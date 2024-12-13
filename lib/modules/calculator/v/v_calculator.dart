@@ -43,6 +43,45 @@ class CalculatorPage extends StatelessWidget {
                         },
                       ),
                     ),
+                    Positioned(
+                      bottom: 100,
+                      right: 15,
+                      child: Obx(
+                        () {
+                          final historyText =
+                              controller.strHistory.value.toString();
+                          return AnimatedSwitcher(
+                            duration: const Duration(milliseconds: 300),
+                            transitionBuilder: (child, animation) {
+                              return FadeTransition(
+                                opacity: animation,
+                                child: SlideTransition(
+                                  position: Tween<Offset>(
+                                    begin: const Offset(0, 1.5),
+                                    end: Offset.zero,
+                                  ).animate(animation),
+                                  child: child,
+                                ),
+                              );
+                            },
+                            child: historyText.isEmpty
+                                ? const SizedBox.shrink()
+                                : AutoSizeText(
+                                    key: ValueKey(historyText),
+                                    "$historyText =",
+                                    style: TextStyle(
+                                      color: theme.number.withOpacity(0.7),
+                                      fontSize: 20,
+                                      fontWeight: FontWeight.w500,
+                                    ),
+                                    maxLines: 1,
+                                    minFontSize: 10,
+                                    overflow: TextOverflow.ellipsis,
+                                  ),
+                          );
+                        },
+                      ),
+                    ),
                     Container(
                       width: Get.width,
                       padding: const EdgeInsets.only(bottom: 15, right: 15),
@@ -51,11 +90,11 @@ class CalculatorPage extends StatelessWidget {
                         child: Obx(
                           () {
                             return AutoSizeText(
-                              // controller.formatNumber(
-                              controller.strDisplay.value.toString() == ""
-                                  ? "0"
-                                  : controller.strDisplay.value,
-                              // ),
+                              controller.formatNumber(
+                                controller.strDisplay.value.toString() == ""
+                                    ? "0"
+                                    : controller.strDisplay.value,
+                              ),
                               style: TextStyle(
                                 color: theme.number,
                                 fontSize: 45,

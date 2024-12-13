@@ -2,17 +2,23 @@ import 'dart:collection';
 
 class Calculation {
   double calculate(String input) {
-    final RegExp regex = RegExp(r'(\d+\.?\d*)([\+\-\*/])(\d+\.?\d*)');
+    // Remove spaces from the input
+    input = input.replaceAll(" ", "");
+
+    // Updated regex to handle negative numbers
+    final RegExp regex = RegExp(r'(-?\d+\.?\d*)([\+\-\*/])(-?\d+\.?\d*)');
     final match = regex.firstMatch(input);
 
     if (match == null) {
       throw FormatException("Invalid input format: $input");
     }
 
+    // Parse operands and operator
     final double operand1 = double.parse(match.group(1)!);
     final String operator = match.group(2)!;
     final double operand2 = double.parse(match.group(3)!);
 
+    // Perform the calculation
     switch (operator) {
       case '+':
         return operand1 + operand2;
@@ -31,8 +37,7 @@ class Calculation {
   }
 }
 
-
-class Calculation2 {
+class AdvanceCalculation {
   double calculate(String input) {
     // Step 1: Tokenize the input
     final List<String> tokens = tokenize(input);

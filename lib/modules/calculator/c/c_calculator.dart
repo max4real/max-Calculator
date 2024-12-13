@@ -6,6 +6,7 @@ class CalculatorController extends GetxController {
   final Calculation calculation = Calculation();
   final RxBool isDarkTheme = true.obs;
   final RxString strDisplay = "".obs;
+  final RxString strHistory = "".obs;
 
   final RxBool xDivision = false.obs;
   final RxBool xMultiplication = false.obs;
@@ -20,14 +21,20 @@ class CalculatorController extends GetxController {
   void onTapSign(String key) {
     if (key == "%") {
       print("dont know the logic");
+      
     } else if (key == "+/-") {
-      if (strDisplay.value.startsWith("-")) {
-        strDisplay.value = strDisplay.value.substring(1);
-      } else {
-        strDisplay.value = "-${strDisplay.value}";
+      if (strDisplay.value.isNotEmpty) {
+        if (strDisplay.value.startsWith("-")) {
+          strDisplay.value = strDisplay.value.substring(1);
+        } else {
+          strDisplay.value = "-${strDisplay.value}";
+        }
       }
     } else if (key == ".") {
-      strDisplay.value += key;
+      if (strDisplay.value.contains(".")) {
+      } else {
+        strDisplay.value += ".";
+      }
     }
   }
 
@@ -86,6 +93,7 @@ class CalculatorController extends GetxController {
   // Clears all data
   void onTapAC() {
     strDisplay.value = "";
+    strHistory.value = "";
     num = "";
     resetOperator();
   }
@@ -96,13 +104,14 @@ class CalculatorController extends GetxController {
     if (operator.isEmpty) return;
 
     final expression =
-        "${num == "" ? "0" : num}$operator${strDisplay.value == "" ? "0" : strDisplay.value}";
+        "${num == "" ? "0" : num} $operator ${strDisplay.value == "" ? "0" : strDisplay.value}";
 
     final result = calculation.calculate(expression);
 
     strDisplay.value = result == result.roundToDouble()
         ? result.toInt().toString()
         : result.toString();
+    strHistory.value = expression.replaceAll("*", "x");
 
     resetOperator();
   }
@@ -121,8 +130,16 @@ class CalculatorController extends GetxController {
     final formatter = NumberFormat('#,##0');
     try {
       final number = double.tryParse(data);
-      if (number == null) throw FormatException("Invalid number");
-      return formatter.format(number);
+      if (number == null) throw const FormatException("Invalid number");
+
+      final parts = data.split('.');
+      final formattedIntegerPart = formatter.format(int.parse(parts[0]));
+
+      if (parts.length > 1) {
+        return '$formattedIntegerPart.${parts.sublist(1).join(".")}';
+      }
+
+      return formattedIntegerPart;
     } catch (e) {
       print("Invalid input for formatting: $data");
       return data;

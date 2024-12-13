@@ -43,21 +43,22 @@ class CalculatorPage extends StatelessWidget {
                         },
                       ),
                     ),
-                    SizedBox(
+                    Container(
                       width: Get.width,
+                      padding: const EdgeInsets.only(bottom: 15, right: 15),
                       child: Align(
                         alignment: Alignment.bottomRight,
                         child: Obx(
                           () {
                             return AutoSizeText(
                               // controller.formatNumber(
-                                controller.strDisplay.value.toString() == ""
-                                    ? "0"
-                                    : controller.strDisplay.value,
+                              controller.strDisplay.value.toString() == ""
+                                  ? "0"
+                                  : controller.strDisplay.value,
                               // ),
                               style: TextStyle(
                                 color: theme.number,
-                                fontSize: 40,
+                                fontSize: 45,
                                 fontWeight: FontWeight.w500,
                               ),
                               maxLines: 1,
@@ -139,16 +140,21 @@ class CalculatorPage extends StatelessWidget {
                   controller.onTapSign("%");
                 },
               ),
-              CustomNumberButton(
-                number: "/",
-                background: theme.numBackground,
-                textColor: theme.sign2,
-                isSign: true,
-                svg: AppSvg.divisionSign,
-                onPress: () {
-                  controller.onTapSign("/");
+              Obx(
+                () {
+                  return CustomNumberButton(
+                    number: "/",
+                    background: theme.numBackground,
+                    textColor: theme.sign2,
+                    isSign: true,
+                    svg: AppSvg.divisionSign,
+                    isOperatorPress: controller.xDivision.value,
+                    onPress: () {
+                      controller.onTapOperator("/");
+                    },
+                  );
                 },
-              ),
+              )
             ],
           ),
           //row 2
@@ -181,15 +187,20 @@ class CalculatorPage extends StatelessWidget {
                   controller.onTapNumber("9");
                 },
               ),
-              CustomNumberButton(
-                number: "X",
-                background: theme.numBackground,
-                textColor: theme.sign2,
-                isSign: false,
-                onPress: () {
-                  controller.onTapSign("*");
+              Obx(
+                () {
+                  return CustomNumberButton(
+                    number: "X",
+                    background: theme.numBackground,
+                    textColor: theme.sign2,
+                    isSign: false,
+                    isOperatorPress: controller.xMultiplication.value,
+                    onPress: () {
+                      controller.onTapOperator("*");
+                    },
+                  );
                 },
-              ),
+              )
             ],
           ),
           //row 3
@@ -222,16 +233,21 @@ class CalculatorPage extends StatelessWidget {
                   controller.onTapNumber("6");
                 },
               ),
-              CustomNumberButton(
-                number: "-",
-                background: theme.numBackground,
-                textColor: theme.sign2,
-                isSign: true,
-                svg: AppSvg.minusSign,
-                onPress: () {
-                  controller.onTapSign("-");
+              Obx(
+                () {
+                  return CustomNumberButton(
+                    number: "-",
+                    background: theme.numBackground,
+                    textColor: theme.sign2,
+                    isSign: true,
+                    svg: AppSvg.minusSign,
+                    isOperatorPress: controller.xSubtraction.value,
+                    onPress: () {
+                      controller.onTapOperator("-");
+                    },
+                  );
                 },
-              ),
+              )
             ],
           ),
           //row 3
@@ -264,16 +280,21 @@ class CalculatorPage extends StatelessWidget {
                   controller.onTapNumber("3");
                 },
               ),
-              CustomNumberButton(
-                number: "+",
-                background: theme.numBackground,
-                textColor: theme.sign2,
-                isSign: true,
-                svg: AppSvg.plusSign,
-                onPress: () {
-                  controller.onTapSign("+");
+              Obx(
+                () {
+                  return CustomNumberButton(
+                    number: "+",
+                    background: theme.numBackground,
+                    textColor: theme.sign2,
+                    isSign: true,
+                    svg: AppSvg.plusSign,
+                    isOperatorPress: controller.xAddition.value,
+                    onPress: () {
+                      controller.onTapOperator("+");
+                    },
+                  );
                 },
-              ),
+              )
             ],
           ),
           //row 4

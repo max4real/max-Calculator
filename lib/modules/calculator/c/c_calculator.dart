@@ -3,47 +3,125 @@ import 'package:max_calculator/modules/calculator/c/calculation.dart';
 import 'package:intl/intl.dart';
 
 class CalculatorController extends GetxController {
-  Calculation calculation = Calculation();
-  RxBool isDarkTheme = true.obs;
-  RxString strDisplay = "".obs;
+  final Calculation calculation = Calculation();
+  final RxBool isDarkTheme = true.obs;
+  final RxString strDisplay = "".obs;
 
-  void onTapNumber(String key) {
-    print("Number - " + key);
-    strDisplay.value = strDisplay.value + key;
-  }
+  final RxBool xDivision = false.obs;
+  final RxBool xMultiplication = false.obs;
+  final RxBool xSubtraction = false.obs;
+  final RxBool xAddition = false.obs;
+
+  String num = "0";
+
+  // Appends numbers or signs to the display
+  void onTapNumber(String key) => strDisplay.value += key;
 
   void onTapSign(String key) {
-    print("Sign - " + key);
-    strDisplay.value = strDisplay.value + key;
+    if (key == "%") {
+      print("dont know the logic");
+    } else if (key == "+/-") {
+      if (strDisplay.value.startsWith("-")) {
+        strDisplay.value = strDisplay.value.substring(1);
+      } else {
+        strDisplay.value = "-${strDisplay.value}";
+      }
+    } else if (key == ".") {
+      strDisplay.value += key;
+    }
   }
 
+  // Handles operator input
+  void onTapOperator(String key) {
+    void setOperatorState(
+        bool division, bool multiplication, bool subtraction, bool addition) {
+      xDivision.value = division;
+      xMultiplication.value = multiplication;
+      xSubtraction.value = subtraction;
+      xAddition.value = addition;
+    }
+
+    if (_isActiveOperator(key)) {
+      resetOperator();
+      strDisplay.value = num;
+    } else {
+      num = strDisplay.value;
+      strDisplay.value = "";
+      setOperatorState(key == "/", key == "*", key == "-", key == "+");
+    }
+  }
+
+  // Checks if the operator is currently active
+  bool _isActiveOperator(String key) {
+    switch (key) {
+      case "/":
+        return xDivision.value;
+      case "*":
+        return xMultiplication.value;
+      case "-":
+        return xSubtraction.value;
+      case "+":
+        return xAddition.value;
+      default:
+        return false;
+    }
+  }
+
+  // Removes the last character from the display
   void onTapBackSpace() {
-    print("back space");
     if (strDisplay.value.isNotEmpty) {
       strDisplay.value =
           strDisplay.value.substring(0, strDisplay.value.length - 1);
     }
   }
 
+  // Resets all operators
+  void resetOperator() {
+    xDivision.value = false;
+    xMultiplication.value = false;
+    xSubtraction.value = false;
+    xAddition.value = false;
+  }
+
+  // Clears all data
   void onTapAC() {
-    print("AC");
     strDisplay.value = "";
+    num = "";
+    resetOperator();
   }
 
+  // Calculates the result
   void onTapEqual() {
-    double result = calculation.calculate(strDisplay.value);
+    final operator = _getActiveOperator();
+    if (operator.isEmpty) return;
 
-    if (result == result.roundToDouble()) {
-      strDisplay.value = result.toInt().toString();
-    } else {
-      strDisplay.value = result.toString();
-    }
+    final expression =
+        "${num == "" ? "0" : num}$operator${strDisplay.value == "" ? "0" : strDisplay.value}";
+
+    final result = calculation.calculate(expression);
+
+    strDisplay.value = result == result.roundToDouble()
+        ? result.toInt().toString()
+        : result.toString();
+
+    resetOperator();
   }
 
+  // Retrieves the active operator as a string
+  String _getActiveOperator() {
+    if (xDivision.value) return "/";
+    if (xMultiplication.value) return "*";
+    if (xSubtraction.value) return "-";
+    if (xAddition.value) return "+";
+    return "";
+  }
+
+  // Formats numbers with commas
   String formatNumber(String data) {
-    var formatter = NumberFormat('#,##0');
+    final formatter = NumberFormat('#,##0');
     try {
-      var number = double.parse(data);
+      final number = double.tryParse(data);
+      if (number == null) throw FormatException("Invalid number");
       return formatter.format(number);
     } catch (e) {
       print("Invalid input for formatting: $data");

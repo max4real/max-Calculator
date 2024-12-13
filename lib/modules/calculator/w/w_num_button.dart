@@ -8,6 +8,7 @@ class CustomNumberButton extends StatelessWidget {
   final bool isSign;
   final String? svg;
   final Function onPress;
+  final bool? isOperatorPress;
 
   const CustomNumberButton({
     super.key,
@@ -17,6 +18,7 @@ class CustomNumberButton extends StatelessWidget {
     this.isSign = false,
     this.svg,
     required this.onPress,
+    this.isOperatorPress = false,
   });
 
   @override
@@ -29,7 +31,7 @@ class CustomNumberButton extends StatelessWidget {
       child: Container(
         margin: const EdgeInsets.all(7),
         decoration: BoxDecoration(
-          color: background,
+          color: isOperatorPress! ? background.withRed(1) : background,
           borderRadius: BorderRadius.circular(10),
         ),
         height: 60,
